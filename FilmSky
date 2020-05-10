@@ -1,0 +1,71 @@
+import  time
+from urllib import request,parse
+import re
+import requests
+
+class FilmSky(object):
+    def __init__(self):
+        self.url='https://www.ygdy8.net/html/gndy/dyzz/list_23_{}.html'
+        self.headers={
+            'User-Agent':'Mozilla/5.0 (iPad; CPU OS 11_0 like Mac OS X) AppleWebKit/604.1.34 (KHTML, like Gecko) Version/11.0 Mobile/15A5341f Safari/604.1'
+        }
+
+    def get_page(self,url):
+        req=requests.get(url=url,headers=self.headers)
+        req.encoding='gbk'
+        html=req.text
+        return html
+
+
+    def parse_page(self,html):
+        pattern=re.compile('<table width="100%".*?<td height="26">.*?<a href="(.*?)".*?>(.*?)</a>',re.S)
+        film_list=pattern.findall(html)
+        for film in film_list:
+            film_link="https://www.ygdy8.net"+film[0]
+            film_name=film[1]
+            d={
+                '电影名称':film_name,
+                '下载连接':film_link
+                }
+            print(d)
+
+
+    def parse_two_page(self,film_link):
+        two_html=self.get_page(file_link)
+        pattern=re.compile('<td style="WORD-WRAP".*?>.*?<a.*?>(.*?)</a>',re.S)
+
+        download_link=pattern.findall(two_html)
+        if len(download_link)>0:
+            download_link=download_link[0].strip()[0:39]
+        else:
+            download_link=''
+        return download_link
+
+
+
+
+    def main(self):
+        for page in range(1, 4):
+            url = self.url.format(page)
+            html = self.get_page(url)
+
+            self.parse_page(html)
+
+
+if __name__=='__main__':
+    start=time.time()
+    spider=FilmSky()
+    spider.main()
+    end=time.time()
+
+
+            
+
+
+
+         
+
+
+
+
+    
